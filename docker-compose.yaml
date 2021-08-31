@@ -1,0 +1,56 @@
+version: "3.8"
+
+services:
+  api:
+    build:
+      context: .
+      target: builder
+    env_file: .env
+    command: "go run ./cmd/server/main.go"
+    volumes:
+      - ./:/build
+      - go-modules:/go/pkg/mod
+    depends_on:
+      - db
+    ports:
+      - 3003:3000
+
+  # worker:
+  #   build:
+  #     context: .
+  #     target: builder
+  #   env_file: .env
+  #   command: "go run ./cmd/s3_sqs_worker/main.go"
+  #   volumes:
+  #     - ./:/build
+  #     - go-modules:/go/pkg/mod
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     - localstack
+  #     - db
+
+  db:
+    image: postgres:13.2-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./.docker-compose/db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+
+  # localstack:
+  #   image: localstack/localstack:0.12.15
+  #   environment:
+  #     SERVICES: s3,sns,sqs
+  #     DEBUG: 1
+  #     DEFAULT_REGION: eu-central-1
+  #     DATA_DIR: /tmp/localstack/data
+  #   volumes:
+  #     - ./.docker-compose/localstack/initaws.d:/docker-entrypoint-initaws.d
+
+volumes:
+  db-data:
+    driver: local
+  go-modules:
+    driver: local

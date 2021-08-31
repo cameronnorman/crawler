@@ -1,0 +1,297 @@
+openapi: 3.0.1
+info:
+  title: Crawl API
+  description: ''
+  version: 0.0.1
+servers:
+  - url: https://crawl.normans.co.za
+  - url: http://localhost:3000
+tags:
+  - name: crawling
+    description: Everything with regards to crawling
+  - name: health
+    description: Health of the application
+paths:
+  /health:
+    get:
+      tags:
+        - health
+      summary: Returns application status
+      responses:
+        200:
+          description: The service is running
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthCheckResponse'
+
+        500:
+          description: Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  '/api/v1/crawls':
+    get:
+      tags:
+        - crawling
+      summary: Returns paginated list of crawls
+      parameters:
+        -
+          in: query
+          name: ref_id
+          description: use to filter crawls by ref_id
+          schema:
+            type: string
+          required: false
+        -
+          in: query
+          name: limit
+          description: The number of crawls per a page. Max allowed value 1000
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 1000
+          required: false
+      responses:
+        201:
+          description: This is the response from the create crawl request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Crawl'
+        400:
+          description: Invalid payload
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  '/api/v1/crawls/{uuid}':
+    get:
+        tags:
+          - crawling
+        summary: Returns a list of crawls
+        parameters:
+          -
+            in: path
+            name: uuid
+            schema:
+              type: string
+              format: uuid
+            required: true
+        responses:
+          201:
+            description: This is the response from the create crawl request
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Crawl'
+          400:
+            description: Invalid payload
+            content:
+              application/problem+json:
+                schema:
+                  $ref: '#/components/schemas/ErrorResponse'
+          500:
+            description: Server error
+            content:
+              application/problem+json:
+                schema:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  '/api/v1/crawl_requests':
+    get:
+      tags:
+        - crawling
+      summary: Paginated list of crawl requests
+      operationId: indexCrawlRequests
+      responses:
+        201:
+          description: This is the response from the create crawl request
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/CrawlRequestResponse'
+        400:
+          description: Invalid payload
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - crawling
+      summary: Crawls the website specified in the payload
+      operationId: createCrawlRequest
+      requestBody:
+        description: This is the endpoint to create a crawl request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrawlRequest'
+      responses:
+        201:
+          description: This is the response from the create crawl request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CrawlRequestResponse'
+        400:
+          description: Invalid payload
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  '/api/v1/crawl_requests/{uuid}':
+    get:
+      tags:
+        - crawling
+      summary: Returns a list of crawls
+      parameters:
+        -
+          in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        201:
+          description: This is the response from the create crawl request
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/CrawlRequestResponse'
+        400:
+          description: Invalid payload
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    HealthCheckResponse:
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          example: RUNNING
+    ErrorResponse:
+      required:
+        - status
+        - title
+        - detail
+        - type
+      properties:
+        status:
+          type: integer
+          description: The HTTP status code generated by the origin server for this occurrence of the problem.
+          format: int32
+          example: 500
+          maximum: 599
+          minimum: 100
+        title:
+          type: string
+          description: A short, human-readable summary of the problem type.
+          example: Internal Server Error
+        detail:
+          type: string
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: There was a issue connecting to the database. Please review connection details
+        type:
+          type: string
+          example: https://tools.ietf.org/html/rfc7231#section-6.6.4
+          description: A URI reference [RFC3986] that identifies the problem type. This specification encourages that, when dereferenced, it provide human-readable documentation for the problem type. When this member is not present, its value is assumed to be "about:blank".
+    CrawlRequest:
+      type: object
+      properties:
+        website:
+          type: string
+          format: uuid
+        available:
+          type: boolean
+          example: false
+        ref_id:
+          type: string
+        status:
+          type: string
+          enum:
+            - queued
+            - in_progress
+            - complete
+            - failed
+        crawl_id:
+          type: string
+          format: uuid
+          description: The details created from this crawl request as a crawl
+        created_at:
+          type: string
+          format: datetime
+        updated_at:
+          type: string
+          format: datetime
+    Crawl:
+      type: object
+      properties:
+        website:
+          type: string
+          format: uuid
+        ref_id:
+          type: string
+        created_at:
+          type: string
+          format: datetime
+        updated_at:
+          type: string
+          format: datetime
+        html:
+          type: string
+          format: html
+          description: The HTML of the website from the crawl
+        text:
+          type: string
+          format: text
+          description: The raw text extracted from the HTML
+    CrawlRequestResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        website:
+          type: string
+        ref_id:
+          type: string
+        created_at:
+          type: string
+          format: datetime
+        updated_at:
+          type: string
+          format: datetime

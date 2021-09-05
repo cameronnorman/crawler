@@ -3,6 +3,8 @@ module crawler
 go 1.16
 
 require (
+	github.com/contribsys/faktory v1.3.0-1 // indirect
+	github.com/contribsys/faktory_worker_go v1.4.2 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
 	github.com/deepmap/oapi-codegen v1.8.2
 	github.com/jackc/pgx/v4 v4.13.0 // indirect

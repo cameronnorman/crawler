@@ -2,6 +2,10 @@
 run: ## Run the server
 	go run cmd/server/main.go
 
+.PHONY: worker
+worker:
+	go run cmd/worker/main.go --worker_function=get_html_worker
+
 .PHONY: migrate
 migrate: migrate_dev migrate_test
 

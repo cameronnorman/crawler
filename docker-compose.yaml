@@ -11,24 +11,19 @@ services:
       - ./:/build
       - go-modules:/go/pkg/mod
     depends_on:
-      - db
+      - faktory
     ports:
       - 3003:3000
 
-  # worker:
-  #   build:
-  #     context: .
-  #     target: builder
-  #   env_file: .env
-  #   command: "go run ./cmd/s3_sqs_worker/main.go"
-  #   volumes:
-  #     - ./:/build
-  #     - go-modules:/go/pkg/mod
-  #   env_file:
-  #     - .env
-  #   depends_on:
-  #     - localstack
-  #     - db
+  faktory:
+    image: contribsys/faktory
+    volumes:
+      - faktory-data:/var/lib/faktory
+    depends_on:
+      - db
+    ports:
+      - 7419:7419
+      - 7420:7420
 
   db:
     image: postgres:13.2-alpine
@@ -53,4 +48,6 @@ volumes:
   db-data:
     driver: local
   go-modules:
+    driver: local
+  faktory-data:
     driver: local

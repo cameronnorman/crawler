@@ -1,35 +1,33 @@
 version: "3.8"
 
 services:
-  api:
-    build:
-      context: .
-      target: builder
-    env_file: .env
-    command: "go run ./cmd/server/main.go"
-    volumes:
-      - ./:/build
-      - go-modules:/go/pkg/mod
-    depends_on:
-      - faktory
-    ports:
-      - 3003:3000
+  # api:
+  #   image: "crawler:latest"
+  #   env_file: .env
+  #   ports:
+  #     - 3003:3000
+  # worker:
+  #   image: "crawler:latest"
+  #   env_file: .env
+  #   command: ["worker", "--worker_function","get_html_worker"]
 
-  faktory:
-    image: contribsys/faktory
-    volumes:
-      - faktory-data:/var/lib/faktory
-    depends_on:
-      - db
-    ports:
-      - 7419:7419
-      - 7420:7420
+  # faktory:
+  #   image: contribsys/faktory
+  #   volumes:
+  #     - faktory-data:/var/lib/faktory
+  #   depends_on:
+  #     - db
+  #   ports:
+  #     - 7419:7419
+  #     - 7420:7420
 
   db:
     image: postgres:13.2-alpine
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
     volumes:
       - db-data:/var/lib/postgresql/data
       - ./.docker-compose/db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d

@@ -37,10 +37,14 @@ test: migrate_test ## Run the app tests
 testc: ## Run the app tests with color output
 	gotest -v ./...
 
+.PHONY: image
+image: ## Build golang image
+	docker build . -t crawler_api:latest
+
 .PHONY: build
 build: ## Compile the golang application
 	CGO_ENABLED=0 go build -o bin/server cmd/server/main.go
-	# CGO_ENABLED=0 go build -o bin/s3_sqs_worker cmd/s3_sqs_worker/main.go
+	CGO_ENABLED=0 go build -o bin/worker cmd/worker/main.go
 	# CGO_ENABLED=0 go build -o bin/migrate cmd/migrate/main.go
 
 lint:

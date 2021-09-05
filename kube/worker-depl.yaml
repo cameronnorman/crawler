@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-deployment
+  labels:
+    app: worker
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+        -
+          name: worker
+          image: crawler:latest
+          imagePullPolicy: Never
+          command:
+            - "worker"
+            - "--worker_function"
+            - "get_html_worker"
+          env:
+            -
+              name: DATABASE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: api-server-secrets
+                  key: database_host
+            -
+              name: DATABASE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: api-server-secrets
+                  key: database_port
+            -
+              name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: api-server-secrets
+                  key: database_user
+            -
+              name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: api-server-secrets
+                  key: database_password
+            -
+              name: DATABASE_DB
+              valueFrom:
+                secretKeyRef:
+                  name: api-server-secrets
+                  key: database_name
+            -
+              name: APP_ENV
+              valueFrom:
+                secretKeyRef:
+                  name: api-server-secrets
+                  key: app_env
+            -
+              name: FAKTORY_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap
+                  key: faktory_url
+

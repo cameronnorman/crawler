@@ -114,8 +114,8 @@ type ServerInterface interface {
 	// (GET /api/v1/crawls/{uuid})
 	GetApiV1CrawlsUuid(ctx echo.Context, uuid string) error
 	// Returns application status
-	// (GET /health)
-	GetHealth(ctx echo.Context) error
+	// (GET /api/v1/health)
+	GetApiV1Health(ctx echo.Context) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -198,12 +198,12 @@ func (w *ServerInterfaceWrapper) GetApiV1CrawlsUuid(ctx echo.Context) error {
 	return err
 }
 
-// GetHealth converts echo context to params.
-func (w *ServerInterfaceWrapper) GetHealth(ctx echo.Context) error {
+// GetApiV1Health converts echo context to params.
+func (w *ServerInterfaceWrapper) GetApiV1Health(ctx echo.Context) error {
 	var err error
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetHealth(ctx)
+	err = w.Handler.GetApiV1Health(ctx)
 	return err
 }
 
@@ -240,6 +240,6 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/api/v1/crawl_requests/:uuid", wrapper.GetApiV1CrawlRequestsUuid)
 	router.GET(baseURL+"/api/v1/crawls", wrapper.GetApiV1Crawls)
 	router.GET(baseURL+"/api/v1/crawls/:uuid", wrapper.GetApiV1CrawlsUuid)
-	router.GET(baseURL+"/health", wrapper.GetHealth)
+	router.GET(baseURL+"/api/v1/health", wrapper.GetApiV1Health)
 
 }

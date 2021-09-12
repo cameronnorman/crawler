@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: worker-deployment
+  namespace: crawler
   labels:
     app: worker
 spec:
@@ -14,11 +15,12 @@ spec:
       labels:
         app: worker
     spec:
+      imagePullSecrets:
+        - name: mydockerreg
       containers:
         -
           name: worker
-          image: crawler:latest
-          imagePullPolicy: Never
+          image: hub.normans.co.za/crawler:0.0.3
           command:
             - "worker"
             - "--worker_function"
@@ -28,37 +30,37 @@ spec:
               name: DATABASE_HOST
               valueFrom:
                 secretKeyRef:
-                  name: api-server-secrets
+                  name: api-secrets
                   key: database_host
             -
               name: DATABASE_PORT
               valueFrom:
                 secretKeyRef:
-                  name: api-server-secrets
+                  name: api-secrets
                   key: database_port
             -
               name: DATABASE_USER
               valueFrom:
                 secretKeyRef:
-                  name: api-server-secrets
+                  name: api-secrets
                   key: database_user
             -
               name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: api-server-secrets
+                  name: api-secrets
                   key: database_password
             -
               name: DATABASE_DB
               valueFrom:
                 secretKeyRef:
-                  name: api-server-secrets
+                  name: api-secrets
                   key: database_name
             -
               name: APP_ENV
               valueFrom:
                 secretKeyRef:
-                  name: api-server-secrets
+                  name: api-secrets
                   key: app_env
             -
               name: FAKTORY_URL

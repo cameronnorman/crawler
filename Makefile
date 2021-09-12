@@ -39,7 +39,9 @@ testc: ## Run the app tests with color output
 
 .PHONY: image
 image: ## Build golang image
-	docker build . -t crawler_api:latest
+	docker build . -t crawler_api:0.0.4
+	docker tag crawler_api:0.0.4 hub.normans.co.za/crawler:0.0.4
+	docker push hub.normans.co.za/crawler:0.0.4
 
 .PHONY: build
 build: ## Compile the golang application

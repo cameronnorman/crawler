@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: faktory-dashboard-http
+  namespace: crawler
+  annotations:
+    traefik.kubernetes.io/ingress.class: "traefik"
+    traefik.kubernetes.io/custom-request-headers: "X-Script-Name:/faktory"
+    traefik.kubernetes.io/proxy-headers: "X-Script-Name"
+spec:
+  rules:
+  - host: "crawler.normans.co.za"
+    http:
+      paths:
+      - path: "/"
+        pathType: Prefix
+        backend:
+          service:
+            name: faktory-service
+            port:
+              number: 7420
+      - path: "/api/v1"
+        pathType: Prefix
+        backend:
+          service:
+            name: api-service
+            port:
+              number: 3000

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mydockerreg
+  namespace: crawler
+data:
+  .dockerconfigjson: eyJhdXRocyI6eyJodWIubm9ybWFucy5jby56YSI6eyJ1c2VybmFtZSI6ImFkbWluIiwicGFzc3dvcmQiOiJDbEBuZGVzdDFuZSJ9fX0=
+type: kubernetes.io/dockerconfigjson

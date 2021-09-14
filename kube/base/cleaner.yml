@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: pod-cleaner
+  namespace: crawler
+spec:
+  schedule: "*/2 * * * *"
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 0
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: pod-completed-monitor
+              image: hub.normans.co.za/pod-cleaner
+              command:
+                - /bin/ash
+                - -c
+                - kubectl get pods -n crawler | grep Terminating | awk '{print $1}' | xargs kubectl delete pod --force --grace-period=0 -n crawler || true

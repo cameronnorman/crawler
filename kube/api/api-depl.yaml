@@ -17,12 +17,50 @@ spec:
     spec:
       imagePullSecrets:
         - name: mydockerreg
+      nodeSelector:
+        node-role.kubernetes.io/worker: worker
+      terminationGracePeriodSeconds: 5
+      #affinity:
+        #podAffinity:
+          #preferredDuringSchedulingIgnoredDuringExecution:
+          #- weight: 100
+            #podAffinityTerm:
+              #labelSelector:
+                #matchExpressions:
+                #- key: app
+                  #operator: In
+                  #values:
+                    #- api
+              #topologyKey: kubernetes.io/hostname
+      tolerations:
+        - key: "node.kubernetes.io/unreachable"
+          operator: "Exists"
+          effect: "NoExecute"
+          tolerationSeconds: 5
+        - key: "node.kubernetes.io/not-ready"
+          operator: "Exists"
+          effect: "NoExecute"
+          tolerationSeconds: 5
       containers:
         -
           name: crawler-api
           image: hub.normans.co.za/crawler:0.0.3
           ports:
             - containerPort: 3000
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 1
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 3
           env:
             -
               name: DATABASE_HOST

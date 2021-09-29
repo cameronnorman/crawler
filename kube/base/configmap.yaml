@@ -4,4 +4,4 @@ metadata:
   name: configmap
   namespace: crawler
 data:
-  faktory_url: tcp://faktory-service-internal:7419
+  faktory_url: tcp://faktory-service-internal.main.svc.cluster.local:7419
